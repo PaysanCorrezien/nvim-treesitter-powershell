@@ -18,12 +18,22 @@ Most of the features from nvim-tree-sitter textobjects are working just fine.
 
 Perfect to work with [Mini.ai](https://github.com/echasnovski/mini.ai)
 
-# Build manualy
+## Build manualy
+
+```powershell
+zig cc -shared -o powershell.so src/parser.c src/scanner.c -Isrc
+```
+
+```powershell
+clang -shared -o powershell.dll src/parser.c src/scanner.c -Isrc
+```
 
 ## Build by Neovim
 
 There is a issue to build automatically with default neovim on windows. GCC installed through `choco install mingw` can't build on my system.
 The workaround is to use zig `choco install zig` and set is a default on nvim (see below).
+
+[Neovim TS Windows](https://github.com/nvim-treesitter/nvim-treesitter/wiki/Windows-support)
 
 ## Manual setup
 
@@ -42,7 +52,7 @@ return {
 			local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 			parser_config.powershell = {
 				install_info = {
-					url = parser_path, -- Directory of the installed parser
+					url = parser_path, -- Directory of the installed parser ex "~/repo/tree-sitter-powershell/"
 					files = { "src/parser.c", "src/scanner.c" }, -- Both need to be include in the build process of it fail
 					branch = "main",
 				},
@@ -56,9 +66,21 @@ return {
 
 ## Using the Queries
 
-Copy the `.scm` files in `~/.config/nvim/queries/powershell/` or any other files where neovim try to read them : [Neovim Docs](https://neovim.io/doc/user/treesitter.html)
+Copy the `.scm` files that are i `queries` folder in `~/.config/nvim/queries/powershell/` or any other folder where neovim can access them : [Neovim Docs](https://neovim.io/doc/user/treesitter.html)
 
-[Neovim TS Windows](https://github.com/nvim-treesitter/nvim-treesitter/wiki/Windows-support)
+## Tips
+
+To use fold based on treesitter you need this in your config :
+
+```lua
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+```
+
+## Shortcomings
+
+- Not all the possibles queries types are covered (indents,locals, etc... )
+- The parser dont detect everything perfectly (ex: comment block )
 
 ## References
 
